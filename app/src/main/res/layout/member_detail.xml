@@ -26,11 +26,38 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_marginTop="20dp">
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="100dp"
+            android:layout_marginBottom="20dp"
+            android:src="@drawable/cupcake" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="친구 상세 페이지 입니다."
+            android:text="앚주욘"
             android:textSize="30dp"
             android:textAlignment="center"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="010-4410-7879"
+            android:textSize="15dp"
+            android:textAlignment="center"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="okkaring@gmail.com"
+            android:textSize="15dp"
+            android:textAlignment="center"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="서울 특별시 서대문구 연희동 117-5 지하왼쪽집"
+            android:textSize="15dp"
+            android:textAlignment="center"/>
+
     </LinearLayout>
 </LinearLayout>

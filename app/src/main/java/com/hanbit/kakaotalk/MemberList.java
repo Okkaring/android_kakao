@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,9 +60,16 @@ public class MemberList extends AppCompatActivity {
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    DeleteMember deleteMember = new DeleteMember(context);
+                                    final DeleteMember deleteMember = new DeleteMember(context);
                                     // Lambda Expression
-                                    deleteMember.execute(m.getSeq());
+                                    new Service.IDelete() {
+                                        @Override
+                                        public void execute(Object o) {
+                                            Log.d("삭제할 아이디 : ", m.getSeq());
+                                            deleteMember.execute(m.getSeq());
+                                        }
+                                    }.execute(null);
+                                    startActivity(new Intent(context,MemberList.class));
                                 }
                             })
                             .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
