@@ -1,11 +1,13 @@
 package com.hanbit.kakaotalk;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +28,7 @@ public class MemberList extends AppCompatActivity {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.member_list);
             final Context context = MemberList.this;
-            ListView listView= (ListView) findViewById(R.id.listView);
+            final ListView listView= (ListView) findViewById(R.id.listView);
             final FriendList friendList = new FriendList(context);
             ArrayList<Member> friends = (ArrayList<Member>) new Service.ILIst() {
                 @Override
@@ -38,8 +40,38 @@ public class MemberList extends AppCompatActivity {
             listView.setAdapter(new MemberAdapter(context,friends));
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                public void onItemClick(AdapterView<?> p, View v, int i, long I) {
+                    Member m = (Member) listView.getItemAtPosition(i);
+                    //Toast.makeText(context, "선택한 아이디의 값: " + i, Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(context, MemberDetail.class);
+                    intent.putExtra("seq",m.getSeq());
+                    startActivity(intent);
+                }
+            });
+            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> p, View v, final int i, long I) {
+                    final Member m = (Member) listView.getItemAtPosition(i);
+                    //Toast.makeText(context,  m.getName() + " 를 정말 삭제하시겠습니까?", Toast.LENGTH_LONG).show();
+                    //의사 표시를 해야함 Yes/No like Prompt
+                    new AlertDialog.Builder(context)
+                            .setTitle(m.getName()+ " 를 정말 삭제하시겠습니까?")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    DeleteMember deleteMember = new DeleteMember(context);
+                                    // Lambda Expression
+                                    deleteMember.execute(m.getSeq());
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    startActivity(new Intent(context,MemberList.class));
+                                }
+                            })
+                            .show();
+                    return true;
                 }
             });
 
@@ -104,6 +136,29 @@ public class MemberList extends AppCompatActivity {
 
             }
             return list;
+        }
+    }
+    private  abstract class DeleteQuery extends Index.QueryFactory{
+        SQLiteOpenHelper helper;
+        public DeleteQuery(Context context){
+            super(context);
+            helper= new Index.SqLiteHelper(context);
+        }
+
+        @Override
+        public SQLiteDatabase getDatabase() {
+            return helper.getWritableDatabase();
+        }
+    }
+    private  class DeleteMember extends DeleteQuery{
+        public DeleteMember(Context context) {
+            super(context);
+        }
+        public void execute(String seq){
+            super.getDatabase().execSQL(
+                    String.format("DELETE from %s WHERE %s = '%s'",
+                    Cons.MEM_TBL, Cons.SEQ, seq)
+            );
         }
     }
     class MemberAdapter extends BaseAdapter{
